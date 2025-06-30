@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FF6B6B">
+    <title>A1 Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/color/48/000000/shop.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://images.unsplash.com">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>A1 online Store</h1>
+            <div class="search-cart">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search products...">
+                    <button class="search-button">🔍</button>
+                </div>
+                <button id="cartButton" class="cart-button">
+                    🛒 <span id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="category-tabs">
+        <button class="category-tab active" data-category="all">All</button>
+        <button class="category-tab" data-category="groceries">Groceries</button>
+        <button class="category-tab" data-category="clothings">Clothings</button>
+        <button class="category-tab" data-category="dailyneeds">Daily Needs</button>
+    </div>
+
+    <main>
+        <div class="container">
+            <div id="productList" class="product-grid"></div>
+            <div id="cart" class="cart-sidebar">
+                <h2>Shopping Cart</h2>
+                <div id="cartItems"></div>
+                <div class="cart-total">
+                    <strong>Total: ₹<span id="cartTotal">0.00</span></strong>
+                </div>
+                <button id="checkoutButton" class="checkout-button">
+                    Proceed to Checkout
+                </button>
+                <div id="checkoutForm" class="user-details-form hidden">
+                    <textarea id="userAddress" placeholder="Enter Delivery Address" required></textarea>
+                    <button id="placeOrderButton" class="checkout-button">
+                        Order via WhatsApp
+                    </button>
+                    <button id="backToCartButton" class="checkout-button" style="background-color: var(--text-secondary);">
+                        Back to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
