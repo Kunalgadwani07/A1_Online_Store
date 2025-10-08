@@ -21,6 +21,15 @@ const products = [
 
 let cart = [];
 
+// Shop definitions (can be edited later)
+const shops = [
+    { key: 'groceries', name: 'Grocery Shop', icon: '🍎' },
+    { key: 'clothings', name: 'Clothing Shop', icon: '👗' },
+    { key: 'dailyneeds', name: 'Daily Needs', icon: '🧴' }
+];
+
+let currentShop = null;
+
 const productList = document.getElementById('productList');
 const cartButton = document.getElementById('cartButton');
 const cartItems = document.getElementById('cartItems');
@@ -32,6 +41,10 @@ const placeOrderButton = document.getElementById('placeOrderButton');
 const backToCartButton = document.getElementById('backToCartButton');
 const searchInput = document.getElementById('searchInput');
 const categoryTabs = document.querySelectorAll('.category-tab');
+const marketView = document.getElementById('marketView');
+const shopItemsView = document.getElementById('shopItemsView');
+const shopTitle = document.getElementById('shopTitle');
+const shopProductList = document.getElementById('shopProductList');
 let currentCategory = 'all';
 
 categoryTabs.forEach(tab => {
@@ -138,6 +151,17 @@ function addToCart(productId) {
     }
 }
 
+// Override addToCart to update cart in shop view
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+        cart.push(product);
+        updateCart();
+        renderShopProducts();
+        showPopup(`${product.name} added to cart!`);
+    }
+}
+
 function removeFromCart(index) {
     cart.splice(index, 1);
     updateCart();
@@ -188,28 +212,81 @@ function updateCart() {
     renderProducts(products);
 }
 
-function updateItemQuantity(productId, change) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
-    if (change > 0) {
-        const currentInventory = getCurrentInventory(productId);
-        if (currentInventory <= 0) {
-            alert('Sorry, this item is out of stock!');
-            return;
-        }
-        cart.push(product);
+// Update cart rendering to work in shop view
+function updateCart() {
+    cartCount.textContent = cart.length;
+    if (cart.length === 0) {
+        cartItems.innerHTML = '<p>Your cart is empty</p>';
+        cartTotal.textContent = '0.00';
+        checkoutForm.classList.add('hidden');
+        checkoutButton.style.display = 'block';
+        document.getElementById('userAddress').value = '';
     } else {
-        const index = cart.findIndex(item => item.id === productId);
-        if (index !== -1) cart.splice(index, 1);
+        const groupedItems = groupCartItems();
+        cartItems.innerHTML = groupedItems.map((item) => `
+            <div class="cart-item">
+                <img src="${getOptimizedImageUrl(item.image)}" alt="${item.name}" loading="lazy">
+                <div class="cart-item-info">
+                    <h4 class="cart-item-name">${item.name}</h4>
+                    <p class="cart-item-price">₹${(item.price * item.quantity).toFixed(2)}</p>
+                    <div class="quantity-controls">
+                        <button onclick="updateItemQuantity(${item.id}, -1)">-</button>
+                        <span>x${item.quantity}</span>
+                        <button onclick="updateItemQuantity(${item.id}, 1)">+</button>
+                    </div>
+                </div>
+                <button class="remove-item" onclick="removeAllOfItem(${item.id})">❌</button>
+            </div>
+        `).join('');
+        const total = groupedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        cartTotal.textContent = total.toFixed(2);
     }
+}
+
+function showMarketView() {
+    marketView.style.display = 'flex';
+    shopItemsView.style.display = 'none';
+    currentShop = null;
+    // Optionally clear search input
+    searchInput.value = '';
+}
+
+function enterShop(shopKey) {
+    currentShop = shopKey;
+    const shop = shops.find(s => s.key === shopKey);
+    shopTitle.textContent = shop ? shop.name : '';
+    marketView.style.display = 'none';
+    shopItemsView.style.display = 'block';
+    renderShopProducts();
     updateCart();
 }
 
-function removeAllOfItem(productId) {
-    cart = cart.filter(item => item.id !== productId);
-    updateCart();
+function renderShopProducts() {
+    // Filter products by currentShop
+    const filteredProducts = products.filter(p => p.category === currentShop);
+    shopProductList.innerHTML = filteredProducts.map(product => {
+        const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+        return `
+        <div class="product-card">
+            <img src="${getOptimizedImageUrl(product.image)}" alt="${product.name}" class="product-image" loading="lazy">
+            <div class="product-info">
+                <h3 class="product-name">${product.name}</h3>
+                <div class="price-container">
+                    <p class="product-price">₹${product.price.toFixed(2)}</p>
+                    <p class="original-price">₹${product.originalPrice.toFixed(2)}</p>
+                    <span class="discount-tag">${discount}% OFF</span>
+                </div>
+                <div class="product-buttons">
+                    <button class="description-btn" onclick="showProductDescription(${product.id})">View Details</button>
+                    <button class="add-to-cart" onclick="addToCart(${product.id})">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+        `;
+    }).join('');
 }
 
+// Hide cart button (not used in this layout)
 cartButton.style.display = 'none';
 
 function debounce(func, wait) {
@@ -258,5 +335,8 @@ placeOrderButton.addEventListener('click', () => {
     checkoutForm.classList.add('hidden');
     checkoutButton.style.display = 'block';
 });
+
+// On page load, show market view
+showMarketView();
 
 renderProducts(products);

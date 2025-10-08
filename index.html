@@ -15,29 +15,48 @@
 <body>
     <header>
         <div class="header-content">
-            <h1>A1 online Store</h1>
+            <h1>A1 Market</h1>
             <div class="search-cart">
                 <div class="search-container">
-                    <input type="text" id="searchInput" placeholder="Search products...">
+                    <input type="text" id="searchInput" placeholder="Search shops or products...">
                     <button class="search-button">🔍</button>
                 </div>
-                <button id="cartButton" class="cart-button">
+                <button id="cartButton" class="cart-button" style="display:none;">
                     🛒 <span id="cartCount">0</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <div class="category-tabs">
-        <button class="category-tab active" data-category="all">All</button>
-        <button class="category-tab" data-category="groceries">Groceries</button>
-        <button class="category-tab" data-category="clothings">Clothings</button>
-        <button class="category-tab" data-category="dailyneeds">Daily Needs</button>
-    </div>
-
     <main>
-        <div class="container">
-            <div id="productList" class="product-grid"></div>
+        <!-- Market View: List of Shops -->
+        <div id="marketView" class="market-view">
+            <!-- Example shops, can be edited later -->
+            <div class="shop-panel">
+                <span class="shop-icon">🍎</span>
+                <button class="shop-name-btn" onclick="enterShop('groceries')">Grocery Shop</button>
+                <div class="shop-desc">Fresh groceries and essentials</div>
+            </div>
+            <div class="shop-panel">
+                <span class="shop-icon">👗</span>
+                <button class="shop-name-btn" onclick="enterShop('clothings')">Clothing Shop</button>
+                <div class="shop-desc">Trendy clothes for all</div>
+            </div>
+            <div class="shop-panel">
+                <span class="shop-icon">🧴</span>
+                <button class="shop-name-btn" onclick="enterShop('dailyneeds')">Daily Needs</button>
+                <div class="shop-desc">Personal care & daily items</div>
+            </div>
+            <!-- Add more shops as needed -->
+        </div>
+
+        <!-- Shop Items View (hidden by default) -->
+        <div id="shopItemsView" class="shop-items-view" style="display:none;">
+            <div class="shop-header">
+                <button class="back-to-market" onclick="showMarketView()">← Back to Market</button>
+                <span class="shop-title" id="shopTitle"></span>
+            </div>
+            <div id="shopProductList" class="shop-items-grid"></div>
             <div id="cart" class="cart-sidebar">
                 <h2>Shopping Cart</h2>
                 <div id="cartItems"></div>
